@@ -1,0 +1,40 @@
+---
+version: "3.4"
+
+networks:
+  proxy:
+    name: proxy
+
+services:
+  traefik:
+    networks:
+      - proxy
+    image: traefik
+    container_name: traefik
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`proxy.pxlnght.com`)"
+      - "traefik.http.routers.traefik.entryPoints=secure"
+      - "traefik.http.routers.traefik.middlewares=https-redirect"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certResolver=acme-http"
+      - "traefik.http.routers.traefik.tls.options=default"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.services.traefik-svc.loadBalancer.server.port=8080"
+    # Run this to generate a password for the line below.
+    # read passwd; echo "matthew:$(echo $passwd | openssl passwd -apr1 -stdin | sed -e s/\\$/\\$\\$/g)"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=pxlnght:putthehashhere"
+      - "traefik.http.routers.traefik.middlewares=traefik-auth"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/traefik.yml
+      - ./config:/config
+      - /fio/opt/traefik/acme.json:/acme.json # This file need to have 600 perms on the host, because matt said so
+    ports:
+      - 80:80
+      - 443:443
+    expose:
+      - 8080 # optional, for the traefik web ui

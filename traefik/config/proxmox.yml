@@ -1,0 +1,22 @@
+---
+http:
+  routers:
+    proxmox-https:
+      rule: "Host(`shami.pxlnght.com`)"
+      service: proxmox-service
+      entrypoints:
+        - secure
+      tls:
+        certResolver: acme-http
+    proxmox-http:
+      rule: "Host(`shami.pxlnght.com`)"
+      service: proxmox-service
+      entrypoints:
+        - web
+      middlewares:
+        - https-redirect
+  services:
+    proxmox-service:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.50.140:8006/"

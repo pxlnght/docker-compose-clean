@@ -1,0 +1,27 @@
+---
+version: "3.4"
+
+services:
+  samba:
+    image: dperson/samba
+    container_name: samba
+    labels:
+      - traefik.enable=false
+    environment:
+      - USERID=1000  #pxlnght user
+      - GROUPID=1005 #libuser group
+      - TZ=America/Detroit
+      - USER=pxlnght;thisisnttherealpasswordlol
+      - SHARE=files;/files;yes;no;no;all;none;;files
+      - SHARE1=library;/library;yes;no;no;all;none;;library
+      - SHARE2=qbit;/qbit;yes;no;no;all;none;;qbit
+    ports:
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139/tcp"
+      - "445:445/tcp"
+    volumes:
+      - /fio/files:/files
+      - /fio/library:/library
+      - /fio/opt/qbittorrent-torrents:/qbit
+    restart: unless-stopped

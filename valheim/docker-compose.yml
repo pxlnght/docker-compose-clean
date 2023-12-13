@@ -1,0 +1,28 @@
+---
+version: "3"
+services:
+  valheim:
+    image: mbround18/valheim:latest
+    ports:
+      - 2456:2456/udp
+      - 2457:2457/udp
+      - 2458:2458/udp
+    environment:
+      - PORT=2456
+      - NAME="SausageLand"
+      - WORLD="SausageLand"
+      - PASSWORD="updog"
+      - TZ=America/Detroit
+      - PUBLIC=1
+      - AUTO_UPDATE=1
+      - AUTO_UPDATE_SCHEDULE="0 1 * * *"
+      - AUTO_BACKUP=1
+      - AUTO_BACKUP_SCHEDULE="*/15 * * * *"
+      - AUTO_BACKUP_REMOVE_OLD=1
+      - AUTO_BACKUP_DAYS_TO_LIVE=3
+      - AUTO_BACKUP_ON_UPDATE=1
+      - AUTO_BACKUP_ON_SHUTDOWN=1
+    volumes:
+    - /fio/game_servers/valheim/saves:/home/steam/.config/unity3d/IronGate/Valheim
+    - /fio/game_servers/valheim/server:/home/steam/valheim
+    - /fio/game_servers/valheim/backups:/home/steam/backups
